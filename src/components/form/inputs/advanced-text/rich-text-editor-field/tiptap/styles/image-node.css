@@ -1,0 +1,48 @@
+.tiptap.ProseMirror {
+  /* Estilos gerais para imagens */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Estilos para imagens fora de emojis */
+  > img:not([data-type="emoji"] img) {
+    margin: 2rem 0;
+    outline: 0.125rem solid transparent;
+    border-radius: 0.25rem; /* --tt-radius-xs */
+  }
+
+  /* Imagens selecionadas no modo focado */
+  &.ProseMirror-focused img:not([data-type="emoji"] img).ProseMirror-selectednode {
+    outline-color: #6229ff; /* --tt-brand-color-500 */
+  }
+
+  /* Manipulação de imagens em threads */
+  .tiptap-thread:has(> img) {
+    margin: 2rem 0;
+
+    img {
+      outline: 0.125rem solid transparent;
+      border-radius: 0.25rem; /* --tt-radius-xs */
+    }
+  }
+
+  .tiptap-thread img {
+    margin: 0;
+  }
+
+  /* Remover borda de foco dos inputs (conforme solicitação inicial) */
+  input:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* Dark mode (opcional, adicionado para consistência) */
+.dark .tiptap.ProseMirror {
+  &.ProseMirror-focused img:not([data-type="emoji"] img).ProseMirror-selectednode {
+    outline-color: #7a52ff; /* --tt-brand-color-400 */
+  }
+}
