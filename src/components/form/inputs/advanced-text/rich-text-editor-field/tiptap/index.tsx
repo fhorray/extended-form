@@ -195,7 +195,7 @@ export function TipTap({
       },
     },
     extensions: [
-      StarterKit,
+      // StarterKit,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Underline,
       TaskList,
@@ -233,6 +233,8 @@ export function TipTap({
       editor?.commands.setContent(content as Content);
     }
   }, [content]);
+
+  console.log(editor?.getHTML());
 
   React.useEffect(() => {
     const checkCursorVisibility = () => {

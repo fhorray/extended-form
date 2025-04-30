@@ -1,0 +1,137 @@
+.tiptap.ProseMirror {
+  /* Estilo comum para listas */
+}
+
+.tiptap.ProseMirror ol,
+.tiptap.ProseMirror ul {
+  @apply mt-6 mb-6 pl-6;
+}
+
+.tiptap.ProseMirror ol:first-child,
+.tiptap.ProseMirror ul:first-child {
+  @apply mt-0;
+}
+
+.tiptap.ProseMirror ol:last-child,
+.tiptap.ProseMirror ul:last-child {
+  @apply mb-0;
+}
+
+.tiptap.ProseMirror ol ol,
+.tiptap.ProseMirror ol ul,
+.tiptap.ProseMirror ul ol,
+.tiptap.ProseMirror ul ul {
+  @apply mt-0 mb-0;
+}
+
+/* Espaço no parágrafo dentro de <li> */
+.tiptap.ProseMirror li p {
+  @apply mt-0;
+}
+
+/* Ordered Lists */
+.tiptap.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.tiptap.ProseMirror ol ol {
+  list-style-type: lower-alpha;
+}
+
+.tiptap.ProseMirror ol ol ol {
+  list-style-type: lower-roman;
+}
+
+/* Unordered Lists */
+.tiptap.ProseMirror ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+}
+
+.tiptap.ProseMirror ul:not([data-type="taskList"]) ul {
+  list-style-type: circle;
+}
+
+.tiptap.ProseMirror ul:not([data-type="taskList"]) ul ul {
+  list-style-type: disc;
+}
+
+/* Task Lists */
+.tiptap.ProseMirror ul[data-type="taskList"] {
+  @apply pl-4;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li {
+  @apply flex flex-row items-start gap-2;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li:not(:has(> p:first-child)) {
+  list-style-type: none;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li[data-checked="true"]>div>p {
+  @apply opacity-50 line-through;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li[data-checked="true"]>div>p span {
+  @apply line-through;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li label {
+  @apply relative p-1;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li label input[type="checkbox"] {
+  @apply absolute opacity-0 w-0 h-0;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li label span {
+  @apply block w-4 h-4 rounded border border-gray-400 cursor-pointer transition-all;
+
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li label span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.75em;
+  height: 0.75em;
+  background-color: rgba(255, 255, 255, 1);
+  opacity: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg...") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg...") center/contain no-repeat;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li input[type="checkbox"]:checked+span {
+  @apply bg-gray-800;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li input[type="checkbox"]:checked+span::before {
+  opacity: 1;
+}
+
+.tiptap.ProseMirror ul[data-type="taskList"] li div {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* Focus fix */
+.tiptap.ProseMirror input:focus {
+  @apply outline-none border-none shadow-none;
+}
+
+/* Dark Mode */
+.dark .tiptap.ProseMirror ul[data-type="taskList"] li label span {
+  border: 1px solid rgba(238, 238, 246, 0.11);
+  background-color: rgba(231, 231, 243, 0.07);
+}
+
+.dark .tiptap.ProseMirror ul[data-type="taskList"] li label span::before {
+  background-color: rgba(14, 14, 17, 1);
+}
+
+.dark .tiptap.ProseMirror ul[data-type="taskList"] li input[type="checkbox"]:checked+span {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(255, 255, 255, 0.96);
+}

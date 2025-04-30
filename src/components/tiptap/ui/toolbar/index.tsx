@@ -20,6 +20,9 @@ import { UndoRedoToolbarButton } from '../undo-redo-button';
 import { ToolbarButton } from './toolbar-button';
 import { TextAlignButton } from '../text-align-button';
 import { TextFormatButton } from '../text-format-button';
+import { LinkButton } from '../link-button';
+import { ListButton } from '../list-button';
+import ImageUploadButton from '../image-upload-button';
 export const Toolbar = ({ editor }: { editor: Editor }) => {
   return (
     <div className="border rounded-lg p-1 bg-card flex flex-wrap gap-1">
@@ -41,7 +44,8 @@ export const Toolbar = ({ editor }: { editor: Editor }) => {
         <TextFormatButton action="italic" editor={editor} />
         <TextFormatButton action="underline" editor={editor} />
         <TextFormatButton action="strike" editor={editor} />
-        <TextFormatButton action="code-block" editor={editor} />
+        <TextFormatButton action="codeBlock" editor={editor} />
+        <TextFormatButton action="quote" editor={editor} />
       </div>
 
       <Separator orientation="vertical" className="mx-1 h-8" />
@@ -58,10 +62,9 @@ export const Toolbar = ({ editor }: { editor: Editor }) => {
 
       {/* Lists and Special Formats Group */}
       <div className="flex items-center gap-1">
-        <ToolbarButton icon={ListIcon} label="Bullet List" />
-        <ToolbarButton icon={ListOrderedIcon} label="Numbered List" />
-        <ToolbarButton icon={QuoteIcon} label="Block Quote" />
-        <ToolbarButton icon={LinkIcon} label="Insert Link" />
+        <ListButton editor={editor} />
+        <LinkButton editor={editor} />
+        <ImageUploadButton editor={editor} />
       </div>
     </div>
   );

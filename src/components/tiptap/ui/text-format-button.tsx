@@ -4,7 +4,14 @@ import { textFormatIcons } from '../constants';
 
 interface TextFormatButtonProps {
   editor: Editor;
-  action: 'bold' | 'italic' | 'underline' | 'strike' | 'code' | 'code-block';
+  action:
+    | 'bold'
+    | 'italic'
+    | 'underline'
+    | 'strike'
+    | 'code'
+    | 'codeBlock'
+    | 'quote';
   className?: string;
 }
 
@@ -19,28 +26,28 @@ export const TextFormatButton = ({
   const handleClick = () => {
     const chain = editor.chain().focus();
 
-    if (action === 'code-block') {
-      const isActive = editor.isActive('customCodeBlock');
-      if (isActive) {
-        chain.setNode('paragraph').run();
-      } else {
-        chain.setNode('customCodeBlock').run();
-      }
+    if (action === 'codeBlock') {
+      chain.toggleCodeBlock().run();
+    } else if (action === 'quote') {
+      chain.toggleBlockquote().run();
     } else {
       chain.toggleMark(action).run();
     }
   };
 
   const isActive =
-    action === 'code-block'
-      ? editor.isActive('customCodeBlock')
-      : editor.isActive(action);
+    action === 'codeBlock'
+      ? editor.isActive('codeBlock')
+      : action === 'quote'
+        ? editor.isActive('blockquote')
+        : editor.isActive(action);
 
   const isDisabled =
-    action === 'code-block'
-      ? !editor.can().setNode('customCodeBlock') &&
-        !editor.can().setNode('paragraph')
-      : !editor.can().toggleMark(action);
+    action === 'codeBlock'
+      ? !editor.can().toggleCodeBlock()
+      : action === 'quote'
+        ? !editor.can().toggleBlockquote()
+        : !editor.can().toggleMark(action);
 
   return (
     <ToolbarButton

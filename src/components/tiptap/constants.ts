@@ -4,6 +4,7 @@ import {
   UnderlineIcon,
   StrikethroughIcon,
   CodeIcon,
+  QuoteIcon,
 } from "lucide-react";
 import { Level } from "./types";
 
@@ -30,7 +31,8 @@ export const textFormatIcons = {
   underline: UnderlineIcon,
   strike: StrikethroughIcon,
   code: CodeIcon,
-  'code-block': CodeIcon,
+  codeBlock: CodeIcon,
+  quote: QuoteIcon
 };
 
 
