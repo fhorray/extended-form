@@ -1,32 +1,24 @@
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import content from './content.json';
 import { extensions } from './extensions';
 import { Toolbar } from './ui/toolbar';
 
 const TipTapEditor = () => {
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          HTMLAttributes: {
-            class: 'font-bold text-gray-800', // aplica a todos os níveis de heading
-          },
-        },
-      }),
-      ...extensions,
-    ],
-    content,
+    extensions: [...extensions()],
+    content: content,
   });
 
   if (!editor) return <span>Loading...</span>;
 
+  console.log(content);
+
   return (
-    <div className="p-8 h-[450px]">
+    <div className="p-8 !min-h-[450px]">
       <Toolbar editor={editor} />
       <EditorContent
         editor={editor}
-        className="h-full w-full border-gray-300 border"
+        className="h-full w-full border-gray-300 border p-2"
       />
 
       {/* <FloatingMenuComponent editor={editor} /> */}

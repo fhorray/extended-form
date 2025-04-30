@@ -3,7 +3,11 @@
 
 /* RESETING  */
 .tiptap.ProseMirror {
-  @apply w-full h-full;
+  @apply w-full h-full; /*apply full width and height*/
+}
+
+.tiptap.ProseMirror:focus {
+  @apply outline-none; /*remove outline*/
 }
 
 
@@ -27,3 +31,5 @@
   @apply text-lg font-medium;
 }
 
+
+/* TIP TAP ALIGN */

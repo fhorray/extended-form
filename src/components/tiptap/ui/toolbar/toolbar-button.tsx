@@ -14,6 +14,7 @@ interface ToolbarButtonProps {
   isActive?: boolean;
   disabled?: boolean;
   tooltip?: string;
+  className?: string;
 }
 
 export const ToolbarButton = ({
@@ -23,6 +24,7 @@ export const ToolbarButton = ({
   isActive = false,
   disabled = false,
   tooltip,
+  className,
 }: ToolbarButtonProps) => {
   return (
     <TooltipProvider>
@@ -35,6 +37,7 @@ export const ToolbarButton = ({
               'h-8 w-8 p-0 rounded-md',
               isActive && 'bg-secondary text-secondary-foreground',
               'transition-all duration-200 hover:scale-105',
+              className,
             )}
             onClick={onClick}
             disabled={disabled}

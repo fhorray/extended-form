@@ -1,4 +1,10 @@
-import { Heading1Icon, Heading2Icon, Heading3Icon, Heading4Icon, Heading5Icon, Heading6Icon } from "lucide-react";
+import {
+  AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, BanIcon, Heading1Icon, Heading2Icon, Heading3Icon, Heading4Icon, Heading5Icon, Heading6Icon, BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  StrikethroughIcon,
+  CodeIcon,
+} from "lucide-react";
 import { Level } from "./types";
 
 export const headingIcons = {
@@ -8,6 +14,23 @@ export const headingIcons = {
   4: Heading4Icon,
   5: Heading5Icon,
   6: Heading6Icon,
+};
+
+export const textAlignIcons = {
+  'left': AlignLeftIcon,
+  'center': AlignCenterIcon,
+  'right': AlignRightIcon,
+  'justify': AlignJustifyIcon,
+  'unset': BanIcon
+}
+
+export const textFormatIcons = {
+  bold: BoldIcon,
+  italic: ItalicIcon,
+  underline: UnderlineIcon,
+  strike: StrikethroughIcon,
+  code: CodeIcon,
+  'code-block': CodeIcon,
 };
 
 
