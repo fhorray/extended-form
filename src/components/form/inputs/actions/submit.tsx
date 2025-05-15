@@ -1,4 +1,4 @@
-import { useFormContext } from '../../context';
+import { useFormContext } from '../../../../contexts/form-context';
 
 export const SubmitButton = ({ label }: { label: string }) => {
   const form = useFormContext();

@@ -8,7 +8,7 @@ import { Phone } from 'lucide-react';
 import { CountrySelect } from './country-select';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { useFieldContext } from '@/components/form/context';
+import { useFieldContext } from '@/contexts/form-context';
 
 interface FieldWrapperProps {
   children: React.ReactNode;

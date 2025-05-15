@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { FieldWrapper } from '../wrapper';
 import { LabelArea } from '../label';
 import { FieldError } from '../error';
-import { useFieldContext } from '../../context';
+import { useFieldContext } from '../../../../contexts/form-context';
 
 export interface NumericSliderInputProps {
   id: string;

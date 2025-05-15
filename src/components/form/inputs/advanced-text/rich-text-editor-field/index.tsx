@@ -1,7 +1,7 @@
-import { useFieldContext } from '@/components/form/context';
-import { FieldError } from '@/components/form/inputs/error';
-import { LabelArea } from '@/components/form/inputs/label';
-import { FieldWrapper } from '@/components/form/inputs/wrapper';
+import { useFieldContext } from '@/contexts/form-context';
+import { FieldError } from '@/components/form/fields/error';
+import { LabelArea } from '@/components/form/fields/label';
+import { FieldWrapper } from '@/components/form/fields/wrapper';
 import { TipTap } from './tiptap';
 import { Content } from '@tiptap/react';
 

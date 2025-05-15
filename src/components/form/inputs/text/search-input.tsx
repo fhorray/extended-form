@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useFieldContext } from '../../context';
+import { useFieldContext } from '../../../../contexts/form-context';
 import { FieldError } from '../error';
 import { LabelArea } from '../label';
 import { FieldWrapper } from '../wrapper';

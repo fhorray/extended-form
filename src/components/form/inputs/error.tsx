@@ -1,6 +1,6 @@
 import { useStore } from '@tanstack/react-form';
 import { CircleAlertIcon } from 'lucide-react';
-import { useFieldContext } from '../context';
+import { useFieldContext } from '../../../contexts/form-context';
 
 export const FieldError = () => {
   const field = useFieldContext<any>();

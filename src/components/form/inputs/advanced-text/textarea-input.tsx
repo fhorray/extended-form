@@ -1,5 +1,5 @@
 import { Textarea } from '@/components/ui/textarea';
-import { useFieldContext } from '../../context';
+import { useFieldContext } from '../../../../contexts/form-context';
 import { LabelArea } from '../label';
 import { FieldWrapper } from '../wrapper';
 import { FieldError } from '../error';

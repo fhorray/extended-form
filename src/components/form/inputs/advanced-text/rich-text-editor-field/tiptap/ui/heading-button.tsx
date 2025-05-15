@@ -5,7 +5,7 @@ import { isNodeSelection, type Editor } from '@tiptap/react';
 import { useTiptapEditor } from '../hooks/use-tiptap-editor';
 
 // --- Lib ---
-import { isNodeInSchema } from '@/components/form/inputs/advanced-text/rich-text-editor-field/tiptap/tiptap-utils';
+import { isNodeInSchema } from '@/components/form/fields/advanced-text/rich-text-editor-field/tiptap/tiptap-utils';
 import {
   HeadingFiveIcon,
   HeadingFourIcon,
