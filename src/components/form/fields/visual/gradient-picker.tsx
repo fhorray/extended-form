@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { FieldError } from '@/components/form/fields/error';
 import { LabelArea } from '@/components/form/fields/label';
 import { FieldWrapper } from '@/components/form/fields/wrapper';
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Popover,
   PopoverContent,
@@ -14,7 +14,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
-import { X } from 'lucide-react';
+import { Copy, Check, Plus, X, Palette } from 'lucide-react';
+import { HexColorPicker } from 'react-colorful';
 
 interface GradientPickerProps {
   label?: string;
@@ -39,297 +40,219 @@ const GradientPickerField = ({
     'linear',
   );
   const [angle, setAngle] = useState(90);
+  const [copied, setCopied] = useState(false);
+  const [activeStopIndex, setActiveStopIndex] = useState<number | null>(null);
+
   const [stops, setStops] = useState<GradientStop[]>([
     { color: '#6366F1', position: 0 },
     { color: '#EC4899', position: 100 },
   ]);
 
-  // useEffect(() => {
-  //   if (field.state.value) {
-  //     try {
-  //       // Tentar extrair informações do gradiente existente
-  //       const value = field.state.value;
-  //       if (value.includes('linear-gradient')) {
-  //         setGradientType('linear');
-
-  //         // Extrair ângulo
-  //         const angleMatch = value.match(/linear-gradient\(\s*(\d+)deg/);
-  //         if (angleMatch && angleMatch[1]) {
-  //           setAngle(Number.parseInt(angleMatch[1]));
-  //         }
-
-  //         // Extrair stops
-  //         const stopsMatch = value.match(/linear-gradient$$[^,]+,(.+)$$/);
-  //         if (stopsMatch && stopsMatch[1]) {
-  //           const stopsStr = stopsMatch[1].trim();
-  //           const extractedStops: GradientStop[] = [];
-
-  //           // Regex para extrair cores e posições
-  //           const stopRegex = /(#[0-9A-Fa-f]{3,8}|\w+$$[^)]+$$)\s*(\d+%)?/g;
-  //           let match;
-  //           let index = 0;
-
-  //           while ((match = stopRegex.exec(stopsStr)) !== null) {
-  //             const color = match[1];
-  //             const position = match[2]
-  //               ? Number.parseInt(match[2])
-  //               : index === 0
-  //                 ? 0
-  //                 : 100;
-  //             extractedStops.push({ color, position });
-  //             index++;
-  //           }
-
-  //           if (extractedStops.length > 0) {
-  //             setStops(extractedStops);
-  //           }
-  //         }
-  //       } else if (value.includes('radial-gradient')) {
-  //         setGradientType('radial');
-
-  //         // Extrair stops para radial
-  //         const stopsMatch = value.match(/radial-gradient$$[^,]+,(.+)$$/);
-  //         if (stopsMatch && stopsMatch[1]) {
-  //           const stopsStr = stopsMatch[1].trim();
-  //           const extractedStops: GradientStop[] = [];
-
-  //           // Regex para extrair cores e posições
-  //           const stopRegex = /(#[0-9A-Fa-f]{3,8}|\w+$$[^)]+$$)\s*(\d+%)?/g;
-  //           let match;
-  //           let index = 0;
-
-  //           while ((match = stopRegex.exec(stopsStr)) !== null) {
-  //             const color = match[1];
-  //             const position = match[2]
-  //               ? Number.parseInt(match[2])
-  //               : index === 0
-  //                 ? 0
-  //                 : 100;
-  //             extractedStops.push({ color, position });
-  //             index++;
-  //           }
-
-  //           if (extractedStops.length > 0) {
-  //             setStops(extractedStops);
-  //           }
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Erro ao analisar o gradiente:', error);
-  //     }
-  //   }
-  // }, [field.state.value]);
-
-  const updateGradient = () => {
+  const gradientString = useMemo(() => {
     const sortedStops = [...stops].sort((a, b) => a.position - b.position);
-
-    let gradientString = '';
     if (gradientType === 'linear') {
-      gradientString = `linear-gradient(${angle}deg, ${sortedStops
-        .map((stop) => `${stop.color} ${stop.position}%`)
-        .join(', ')})`;
-    } else {
-      gradientString = `radial-gradient(circle, ${sortedStops
-        .map((stop) => `${stop.color} ${stop.position}%`)
-        .join(', ')})`;
+      return `linear-gradient(${angle}deg, ${sortedStops.map((stop) => `${stop.color} ${stop.position}%`).join(', ')})`;
     }
+    return `radial-gradient(circle, ${sortedStops.map((stop) => `${stop.color} ${stop.position}%`).join(', ')})`;
+  }, [stops, angle, gradientType]);
 
+  const updateGradient = useCallback(() => {
     field.setValue(gradientString);
-    return gradientString;
-  };
+  }, [gradientString, field]);
 
-  const handleStopColorChange = (index: number, color: string) => {
-    const newStops = [...stops];
-    newStops[index].color = color;
-    setStops(newStops);
-    updateGradient();
-  };
+  const handleStopColorChange = useCallback((index: number, color: string) => {
+    setStops((prev) => {
+      const updated = [...prev];
+      updated[index].color = color;
+      return updated;
+    });
+  }, []);
 
-  const handleStopPositionChange = (index: number, position: number) => {
-    const newStops = [...stops];
-    newStops[index].position = position;
-    setStops(newStops);
-    updateGradient();
-  };
+  const handleStopPositionChange = useCallback(
+    (index: number, position: number) => {
+      setStops((prev) => {
+        const updated = [...prev];
+        updated[index].position = position;
+        return updated;
+      });
+    },
+    [],
+  );
 
-  const addStop = () => {
+  const addStop = useCallback(() => {
     if (stops.length < 5) {
-      // Limitar a 5 stops
-      // Encontrar uma posição intermediária
-      const positions = stops.map((stop) => stop.position);
-      const min = Math.min(...positions);
-      const max = Math.max(...positions);
-      const middle = Math.round((min + max) / 2);
-
+      const positions = stops.map((s) => s.position);
+      const middle = Math.round(
+        (Math.min(...positions) + Math.max(...positions)) / 2,
+      );
       setStops([...stops, { color: '#FFFFFF', position: middle }]);
-      updateGradient();
     }
+  }, [stops]);
+
+  const removeStop = useCallback(
+    (index: number) => {
+      if (stops.length > 2) {
+        setStops((prev) => prev.filter((_, i) => i !== index));
+      }
+    },
+    [stops],
+  );
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(field.state.value || '');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const removeStop = (index: number) => {
-    if (stops.length > 2) {
-      // Manter pelo menos 2 stops
-      const newStops = [...stops];
-      newStops.splice(index, 1);
-      setStops(newStops);
-      updateGradient();
-    }
-  };
+  const gradientStyle = { background: gradientString };
 
-  const computedGradient = (() => {
-    const sortedStops = [...stops].sort((a, b) => a.position - b.position);
-    if (gradientType === 'linear') {
-      return `linear-gradient(${angle}deg, ${sortedStops
-        .map((stop) => `${stop.color} ${stop.position}%`)
-        .join(', ')})`;
-    } else {
-      return `radial-gradient(circle, ${sortedStops
-        .map((stop) => `${stop.color} ${stop.position}%`)
-        .join(', ')})`;
-    }
-  })();
-
-  const gradientStyle = {
-    background: computedGradient,
-  };
+  // Atualiza valor quando `gradientString` muda
+  useMemo(() => {
+    updateGradient();
+  }, [gradientString, updateGradient]);
 
   return (
     <FieldWrapper>
       {label && <LabelArea label={label} htmlFor={id} required={required} />}
-
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex items-center gap-3 w-full">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-10 h-10 p-0 border-2"
+              className="relative w-12 h-12 p-0 rounded-md transition-all duration-200 hover:scale-105 active:scale-95 overflow-hidden"
               style={gradientStyle}
-            />
+            >
+              <div className="absolute inset-0 opacity-20 bg-[linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%,#ccc),linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%,#ccc)] bg-[length:10px_10px] bg-[position:0_0,5px_5px]"></div>
+              <Palette
+                className="absolute bottom-1 right-1 text-white/70"
+                size={12}
+              />
+            </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80">
+          <PopoverContent className="w-80 p-4 animate-in fade-in zoom-in-95">
             <div className="flex flex-col gap-4">
-              <div className="h-20 rounded-md" style={gradientStyle}></div>
+              <div
+                className="h-24 rounded-lg shadow-inner relative"
+                style={gradientStyle}
+              >
+                <div className="absolute inset-0 opacity-20 pointer-events-none bg-[linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%,#ccc),linear-gradient(45deg,#ccc_25%,transparent_25%,transparent_75%,#ccc_75%,#ccc)] bg-[length:10px_10px] bg-[position:0_0,5px_5px]"></div>
+              </div>
 
               <Tabs defaultValue="type" className="w-full">
-                <TabsList className="grid grid-cols-2">
-                  <TabsTrigger value="type">Tipo</TabsTrigger>
-                  <TabsTrigger value="stops">Cores</TabsTrigger>
+                <TabsList className="grid grid-cols-2 mb-4">
+                  <TabsTrigger value="type">Type</TabsTrigger>
+                  <TabsTrigger value="stops">Colors</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="type" className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Tipo de Gradiente
+                <TabsContent value="type" className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-700">
+                      Gradient Type
                     </label>
                     <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant={
-                          gradientType === 'linear' ? 'default' : 'outline'
-                        }
-                        className="flex-1"
-                        onClick={() => {
-                          setGradientType('linear');
-                          updateGradient();
-                        }}
-                      >
-                        Linear
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={
-                          gradientType === 'radial' ? 'default' : 'outline'
-                        }
-                        className="flex-1"
-                        onClick={() => {
-                          setGradientType('radial');
-                          updateGradient();
-                        }}
-                      >
-                        Radial
-                      </Button>
+                      {['linear', 'radial'].map((type) => (
+                        <Button
+                          key={type}
+                          type="button"
+                          variant={
+                            gradientType === type ? 'default' : 'outline'
+                          }
+                          className="flex-1"
+                          onClick={() =>
+                            setGradientType(type as 'linear' | 'radial')
+                          }
+                        >
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </Button>
+                      ))}
                     </div>
                   </div>
 
                   {gradientType === 'linear' && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <label className="text-sm font-medium">Ângulo</label>
-                        <span className="text-sm">{angle}°</span>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-medium text-gray-700">
+                          Angle
+                        </label>
+                        <span className="text-sm text-gray-500">{angle}°</span>
                       </div>
                       <Slider
                         value={[angle]}
                         min={0}
                         max={360}
                         step={1}
-                        onValueChange={(value) => {
-                          setAngle(value[0]);
-                          updateGradient();
-                        }}
+                        onValueChange={(value) => setAngle(value[0])}
                       />
                     </div>
                   )}
                 </TabsContent>
 
                 <TabsContent value="stops" className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-medium">
-                        Pontos de Cor
-                      </label>
-                      {stops.length < 5 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addStop}
-                        >
-                          Adicionar
-                        </Button>
-                      )}
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium text-gray-700">
+                      Color Stops
+                    </label>
+                    {stops.length < 5 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={addStop}
+                        className="h-8 px-3"
+                      >
+                        <Plus size={14} className="mr-1" /> Add Stop
+                      </Button>
+                    )}
+                  </div>
 
-                    <div className="space-y-3">
-                      {stops.map((stop, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Input
-                            type="color"
-                            value={stop.color}
-                            onChange={(e) =>
-                              handleStopColorChange(index, e.target.value)
-                            }
-                            className="w-10 h-10 p-1"
-                          />
+                  <div className="space-y-4">
+                    {stops.map((stop, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 cursor-pointer rounded border"
+                          onClick={() => setActiveStopIndex(index)}
+                          style={{ backgroundColor: stop.color }}
+                        />
 
-                          <div className="flex-1 space-y-1">
-                            <div className="flex justify-between text-xs">
-                              <span>Posição</span>
-                              <span>{stop.position}%</span>
-                            </div>
-                            <Slider
-                              value={[stop.position]}
-                              min={0}
-                              max={100}
-                              step={1}
-                              onValueChange={(value) =>
-                                handleStopPositionChange(index, value[0])
-                              }
-                            />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>Position</span>
+                            <span>{stop.position}%</span>
                           </div>
-
-                          {stops.length > 2 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeStop(index)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          )}
+                          <Slider
+                            value={[stop.position]}
+                            min={0}
+                            max={100}
+                            step={1}
+                            onValueChange={(value) =>
+                              handleStopPositionChange(index, value[0])
+                            }
+                          />
                         </div>
-                      ))}
-                    </div>
+
+                        {stops.length > 2 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeStop(index)}
+                            className="h-8 w-8 text-gray-500 hover:text-red-500"
+                          >
+                            <X size={14} />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+
+                    {activeStopIndex !== null && (
+                      <div className="mt-4">
+                        <HexColorPicker
+                          color={stops[activeStopIndex].color}
+                          onChange={(color) =>
+                            handleStopColorChange(activeStopIndex, color)
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
@@ -337,16 +260,31 @@ const GradientPickerField = ({
           </PopoverContent>
         </Popover>
 
-        <Input
-          value={field.state.value || ''}
-          onChange={(e) => field.setValue(e.target.value)}
-          className="font-mono text-sm"
-          readOnly
-        />
+        <div className="flex-1 relative">
+          <Input
+            value={field.state.value || ''}
+            onChange={(e) => field.setValue(e.target.value)}
+            className="font-mono text-sm pr-10"
+            readOnly
+          />
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-100 active:bg-gray-200"
+          >
+            {copied ? (
+              <Check size={16} className="text-green-500" />
+            ) : (
+              <Copy size={16} className="text-gray-500" />
+            )}
+          </button>
+        </div>
       </div>
 
       {description && (
-        <span className="text-sm text-muted-foreground">{description}</span>
+        <span className="text-sm text-muted-foreground mt-1">
+          {description}
+        </span>
       )}
       <FieldError />
     </FieldWrapper>

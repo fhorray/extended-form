@@ -4,17 +4,12 @@ import App from './App.tsx';
 import './index.css';
 
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import Form from './Form.tsx';
 import { Toaster } from './components/ui/sonner.tsx';
 
 let router = createBrowserRouter([
   {
     path: '/',
     Component: App,
-  },
-  {
-    path: '/form',
-    Component: Form,
   },
 ]);
 

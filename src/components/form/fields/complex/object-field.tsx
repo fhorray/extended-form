@@ -1,14 +1,11 @@
 'use client';
 
-import { useFieldContext } from '@/contexts/form-context';
 import { FieldError } from '@/components/form/fields/error';
 import { LabelArea } from '@/components/form/fields/label';
 import { FieldWrapper } from '@/components/form/fields/wrapper';
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -17,6 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useFieldContext, useFormContext } from '@/contexts/form-context';
+import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 interface ObjectFieldProps {
   label?: string;
@@ -41,23 +42,32 @@ const ObjectFieldComponent = ({
   fields,
 }: ObjectFieldProps) => {
   const field = useFieldContext<Record<string, any>>();
-  const [values, setValues] = useState<Record<string, any>>(
-    field.state.value || {},
-  );
+  const [values, setValues] = useState<Record<string, any>>({});
 
+  // Initialize with default values on component mount
   useEffect(() => {
-    if (field.state.value) {
-      setValues(field.state.value);
-    } else {
-      // Inicializar com valores padrão
-      const defaultValues: Record<string, any> = {};
-      fields.forEach((f) => {
-        defaultValues[f.name] = f.type === 'checkbox' ? false : '';
-      });
-      setValues(defaultValues);
-      field.setValue(defaultValues);
+    // Create default values object
+    const defaultValues: Record<string, any> = {};
+    fields.forEach((f) => {
+      defaultValues[f.name] = f.type === 'checkbox' ? false : '';
+    });
+
+    // If field already has values, use those, otherwise use defaults
+    const initialValues = field.state.value
+      ? { ...defaultValues, ...field.state.value }
+      : defaultValues;
+
+    // Set local state and update form context
+    setValues(initialValues);
+
+    // Only set the field value if it's empty or different
+    if (
+      !field.state.value ||
+      JSON.stringify(field.state.value) !== JSON.stringify(initialValues)
+    ) {
+      field.setValue(initialValues);
     }
-  }, [field.state.value, fields]);
+  }, [fields]);
 
   const updateField = (name: string, value: any) => {
     const updatedValues = { ...values, [name]: value };
@@ -81,7 +91,10 @@ const ObjectFieldComponent = ({
       case 'number':
         return (
           <div className="space-y-2" key={name}>
-            <Label htmlFor={`${id}-${name}`}>
+            <Label
+              htmlFor={`${id}-${name}`}
+              className="text-sm font-medium flex items-center"
+            >
               {label}
               {fieldRequired && (
                 <span className="text-destructive ml-1">*</span>
@@ -94,6 +107,7 @@ const ObjectFieldComponent = ({
               onChange={(e) => updateField(name, e.target.value)}
               placeholder={placeholder}
               required={fieldRequired}
+              className="transition-all focus-visible:ring-primary/20"
             />
           </div>
         );
@@ -101,7 +115,10 @@ const ObjectFieldComponent = ({
       case 'textarea':
         return (
           <div className="space-y-2" key={name}>
-            <Label htmlFor={`${id}-${name}`}>
+            <Label
+              htmlFor={`${id}-${name}`}
+              className="text-sm font-medium flex items-center"
+            >
               {label}
               {fieldRequired && (
                 <span className="text-destructive ml-1">*</span>
@@ -113,31 +130,41 @@ const ObjectFieldComponent = ({
               onChange={(e) => updateField(name, e.target.value)}
               placeholder={placeholder}
               required={fieldRequired}
+              className="min-h-[100px] transition-all focus-visible:ring-primary/20"
             />
           </div>
         );
 
       case 'checkbox':
         return (
-          <div className="flex items-center space-x-2" key={name}>
+          <div className="flex items-start space-x-2 py-2" key={name}>
             <Checkbox
               id={`${id}-${name}`}
               checked={values[name] || false}
               onCheckedChange={(checked) => updateField(name, checked)}
+              className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
-            <Label htmlFor={`${id}-${name}`}>
-              {label}
-              {fieldRequired && (
-                <span className="text-destructive ml-1">*</span>
-              )}
-            </Label>
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor={`${id}-${name}`}
+                className="text-sm font-medium flex items-center"
+              >
+                {label}
+                {fieldRequired && (
+                  <span className="text-destructive ml-1">*</span>
+                )}
+              </Label>
+            </div>
           </div>
         );
 
       case 'select':
         return (
           <div className="space-y-2" key={name}>
-            <Label htmlFor={`${id}-${name}`}>
+            <Label
+              htmlFor={`${id}-${name}`}
+              className="text-sm font-medium flex items-center"
+            >
               {label}
               {fieldRequired && (
                 <span className="text-destructive ml-1">*</span>
@@ -148,7 +175,10 @@ const ObjectFieldComponent = ({
               onValueChange={(value) => updateField(name, value)}
               required={fieldRequired}
             >
-              <SelectTrigger id={`${id}-${name}`}>
+              <SelectTrigger
+                id={`${id}-${name}`}
+                className="w-full transition-all focus-visible:ring-primary/20"
+              >
                 <SelectValue
                   placeholder={
                     placeholder || `Selecione ${label.toLowerCase()}`
@@ -173,16 +203,16 @@ const ObjectFieldComponent = ({
 
   return (
     <FieldWrapper>
-      {label && <LabelArea label={label} htmlFor={id} required={required} />}
+      {/* {label && <LabelArea label={label} htmlFor={id} required={required} />} */}
 
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          {fields.map((fieldConfig) => renderField(fieldConfig))}
-        </CardContent>
-      </Card>
+      <div className={cn('space-y-4', !label && 'pt-6')}>
+        {fields.map((fieldConfig) => renderField(fieldConfig))}
+      </div>
 
       {description && (
-        <span className="text-sm text-muted-foreground">{description}</span>
+        <span className="text-sm text-muted-foreground mt-2 block">
+          {description}
+        </span>
       )}
       <FieldError />
     </FieldWrapper>

@@ -7,9 +7,11 @@ import { FieldWrapper } from '@/components/form/fields/wrapper';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, Check, RefreshCw } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle, Check, RefreshCw, Copy, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface JsonInputProps {
   label?: string;
@@ -30,6 +32,7 @@ const JsonInputComponent = ({
   const [jsonValue, setJsonValue] = useState<string>(field.state.value || '');
   const [isValid, setIsValid] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (field.state.value) {
@@ -80,59 +83,95 @@ const JsonInputComponent = ({
     }
   };
 
+  const copyToClipboard = () => {
+    if (jsonValue) {
+      navigator.clipboard.writeText(jsonValue);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <FieldWrapper>
       {label && <LabelArea label={label} htmlFor={id} required={required} />}
 
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <div className="relative">
-            <Textarea
-              id={id}
-              value={jsonValue}
-              onChange={(e) => handleChange(e.target.value)}
-              className={`font-mono text-sm ${isValid ? '' : 'border-destructive'}`}
-              style={{ height, resize: 'vertical' }}
-              placeholder="{}"
-            />
-            <div className="absolute top-2 right-2 flex gap-1">
+      <Card className="shadow-sm border-border/50">
+        <CardHeader className="p-3 pb-0 flex flex-row items-center justify-between">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            JSON Editor
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {isValid && jsonValue.trim() && (
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
+                <Check className="h-3 w-3 mr-1" />
+                Válido
+              </Badge>
+            )}
+            <div className="flex">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={formatJson}
                 disabled={!isValid}
-                className="h-6 w-6 rounded-full bg-background/80 backdrop-blur-sm"
+                className="h-7 w-7 rounded-md hover:bg-muted transition-colors"
                 title="Formatar JSON"
               >
-                <RefreshCw className="h-3 w-3" />
+                <RefreshCw className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={copyToClipboard}
+                disabled={!jsonValue.trim()}
+                className="h-7 w-7 rounded-md hover:bg-muted transition-colors"
+                title="Copiar JSON"
+              >
+                {copied ? (
+                  <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
               </Button>
             </div>
           </div>
+        </CardHeader>
+        <CardContent className="p-3">
+          <div className="relative">
+            <Textarea
+              id={id}
+              value={jsonValue}
+              onChange={(e) => handleChange(e.target.value)}
+              className={cn(
+                'font-mono text-sm resize-vertical p-3 bg-muted/30 border-muted',
+                isValid
+                  ? ''
+                  : 'border-destructive focus-visible:ring-destructive/30',
+              )}
+              style={{ height, minHeight: '120px' }}
+              placeholder="{}"
+            />
+          </div>
 
           {!isValid && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="mt-3 py-2 text-sm">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
+              <AlertDescription className="ml-2">
                 Erro de sintaxe JSON: {errorMessage}
               </AlertDescription>
-            </Alert>
-          )}
-
-          {isValid && jsonValue.trim() && (
-            <Alert
-              variant="default"
-              className="bg-green-50 text-green-800 border-green-200"
-            >
-              <Check className="h-4 w-4" />
-              <AlertDescription>JSON válido</AlertDescription>
             </Alert>
           )}
         </CardContent>
       </Card>
 
       {description && (
-        <span className="text-sm text-muted-foreground">{description}</span>
+        <span className="text-sm text-muted-foreground mt-2 block">
+          {description}
+        </span>
       )}
       <FieldError />
     </FieldWrapper>

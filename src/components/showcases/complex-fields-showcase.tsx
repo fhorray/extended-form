@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useAppForm } from '@/contexts/form-context';
-import { useEffect } from 'react';
 
 // Importando os componentes de campos complexos
 import { Button } from '../ui/button';
@@ -44,7 +43,12 @@ type ComplexFormValues = {
 function ComplexFieldsShowcaseForm() {
   const form = useAppForm({
     defaultValues: {
-      person: { name: 'João Silva', age: 30, email: 'joao@exemplo.com' },
+      person: {
+        name: 'João Silva',
+        age: 30,
+        email: 'joao@exemplo.com',
+        phone: 'option-1',
+      },
       hobbies: ['Leitura', 'Ciclismo', 'Fotografia'],
       employees: [
         { id: 1, name: 'Ana Santos', department: 'Marketing', salary: 5000 },
@@ -117,6 +121,22 @@ function ComplexFieldsShowcaseForm() {
                     { name: 'name', label: 'Nome', type: 'text' },
                     { name: 'age', label: 'Idade', type: 'number' },
                     { name: 'email', label: 'Email', type: 'email' },
+                    {
+                      name: 'phone',
+                      label: 'Phone',
+                      type: 'select',
+                      options: [
+                        {
+                          label: 'Option 1',
+                          value: 'option-1',
+                        },
+                        {
+                          label: 'Option 2',
+                          value: 'option-2',
+                        },
+                      ],
+                      required: true,
+                    },
                   ]}
                 />
               )}

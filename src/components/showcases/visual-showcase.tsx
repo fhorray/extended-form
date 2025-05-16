@@ -75,6 +75,8 @@ function VisualShowcaseForm() {
                 />
               )}
             />
+
+            <code>{JSON.stringify(form.state.values.color, null, 2)}</code>
           </CardContent>
         </Card>
 
